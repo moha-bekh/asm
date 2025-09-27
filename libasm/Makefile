@@ -1,31 +1,32 @@
-NASM = nasm -f elf64
-AR = ar rcs
+VOLUME=/Users/moha/Documents/libasm/shared
+IMAGE=nasm-x86_64
+CONTAINER=libasm
 
-SRCS = ft_strlen.s
-OBJS = $(SRCS:.s=.o)
+all: build run
 
-NAME = libasm.a
+run:
+	@mkdir -p $(VOLUME)
+	@docker run --name $(CONTAINER) \
+		-ti --rm \
+		-v $(VOLUME):/shared \
+		--cap-add=SYS_PTRACE \
+		--security-opt seccomp=unconfined \
+		$(IMAGE) bash
 
-all: $(NAME)
-
-$(NAME): $(OBJS)
-	$(AR) $(NAME) $(OBJS)
-
-%.o: %.s
-	$(NASM) $<
-
-main:
-	$(NASM) main.s -o main.o
-	ld main.o -o main -L . -l asm
+build:
+	@docker build --platform=linux/amd64 -t $(IMAGE) .
 
 clean:
-	rm -f $(OBJS)
-	rm -f main.o
+	@docker rm -f $(CONTAINER) || true
 
 fclean: clean
-	rm -f $(NAME)
-	rm -f main
+	@docker rmi $(IMAGE) || true
 
-re: fclean all
+info:
+	@docker ps -a
+	@docker images
+	@docker volume ls
+	@docker network ls
 
-.PHONY: all clean fclean re
+log:
+	@docker logs -f $(CONTAINER)
