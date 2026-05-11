@@ -4,7 +4,22 @@ NASMFLAGS = -f elf64
 CC = gcc
 CFLAGS = -m64
 
-SRCS =  \
+ASRCS =	\
+				src/ft_strlen.s \
+				src/ft_strcpy.s \
+				src/ft_strcmp.s \
+				src/ft_write.s \
+				src/ft_read.s \
+				src/ft_strdup.s \
+
+BSRCS =	\
+				src/ft_atoi_base.s \
+				src/ft_list_push_front.s \
+				src/ft_list_size.s \
+				src/ft_list_sort.s \
+				src/ft_list_remove_if.s \
+
+SRCS +=  \
 				src/ft_isascii.s \
 				src/ft_isprint.s \
 				src/ft_isalpha.s \

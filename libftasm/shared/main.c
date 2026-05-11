@@ -20,6 +20,9 @@ void ft_to() {
 
 int main(int ac, char **av) {
   // ft_is();
-  ft_to();
+  // ft_to();
+  char hello[] = "Hello World!";
+  int len = ft_strlen(hello);
+  printf("Length of '%s' is %d\n", hello, len);
   return 0;
 }

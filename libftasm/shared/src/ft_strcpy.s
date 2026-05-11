@@ -5,4 +5,13 @@ section .text
 
 ft_strcpy:
 
+  ; rdi - dst
+  ; rsi - src
+  ; rcx - i
+  
+  xor rcx, rcx
+
+  mov rax, rcx
+  ret
+
 end:

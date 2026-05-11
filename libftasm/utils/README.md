@@ -1,0 +1,12 @@
+◦ ft_strlen (man 3 strlen)
+◦ ft_strcpy (man 3 strcpy)
+◦ ft_strcmp (man 3 strcmp)
+◦ ft_write (man 2 write)
+◦ ft_read (man 2 read)
+◦ ft_strdup (man 3 strdup, you can call to malloc)
+
+• ft_atoi_base (see Annex V.1)
+• ft_list_push_front (see Annex V.2)
+• ft_list_size (see Annex V.3)
+• ft_list_sort (see Annex V.4)
+• ft_list_remove_if (see Annex V.5)

@@ -1,7 +1,7 @@
-; size_t ft_strlen(const char *s);
 global ft_strlen
 
 section .text
+; size_t ft_strlen(const char *s);
 
 ft_strlen:
   xor rcx, rcx
@@ -16,4 +16,5 @@ ft_strlen:
   .end:
     mov rax, rcx
     ret
+
 
