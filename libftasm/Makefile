@@ -1,4 +1,4 @@
-VOLUME=/Users/moha/Documents/dev/lang/asm/libasm/shared
+VOLUME=/Users/moha/Documents/dev/lang/asm/libftasm/shared
 IMAGE=nasm-x86_64
 CONTAINER=libasm
 
