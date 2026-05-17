@@ -1,0 +1,54 @@
+version: "3"
+
+vars:
+  ROOT: "{{.TASKFILE_DIR}}/.."
+  IMAGE: asm-qemu-debug
+  CONTAINER: asm-qemu-debug
+  FILE: '{{default "stack" .FILE}}'
+  PORT: '{{default "1234" .PORT}}'
+
+tasks:
+  build:
+    desc: Build the ARM64 debug image with QEMU and gdb-multiarch
+    cmds:
+      - docker build --platform=linux/arm64 -t {{.IMAGE}} -f "{{.TASKFILE_DIR}}/Dockerfile" "{{.TASKFILE_DIR}}"
+
+  up:
+    desc: Open a shell in the debug container
+    cmds:
+      - |
+        docker run --name {{.CONTAINER}} -it --rm \
+        -v "{{.ROOT}}:/app" \
+        -p {{.PORT}}:{{.PORT}} \
+        {{.IMAGE}} bash
+
+  shell:
+    desc: Open a second shell in the running debug container
+    cmds:
+      - docker exec -it {{.CONTAINER}} bash
+
+  re:
+    desc: Rebuild the image and open a shell
+    cmds:
+      - task -t "{{.TASKFILE_DIR}}/Taskfile.yaml" build
+      - task -t "{{.TASKFILE_DIR}}/Taskfile.yaml" up
+
+  asm:
+    desc: Build the selected x86_64 assembly file inside the running container
+    cmds:
+      - docker exec -it {{.CONTAINER}} make FILE={{.FILE}} LD=x86_64-linux-gnu-ld
+
+  run:
+    desc: Run the selected x86_64 binary through qemu-x86_64
+    cmds: 
+      - docker exec -it {{.CONTAINER}} make FILE={{.FILE}} LD=x86_64-linux-gnu-ld RUNNER=qemu-x86_64
+
+  server:
+    desc: Start qemu-x86_64 gdbstub for the selected binary
+    cmds:
+      - docker exec -it {{.CONTAINER}} qemu-x86_64 -g {{.PORT}} ./{{.FILE}}
+
+  gdb:
+    desc: Connect Pwndbg to the qemu gdbstub
+    cmds:
+      - docker exec -it {{.CONTAINER}} pwndbg -x debug/x86_64-qemu.gdb ./{{.FILE}}

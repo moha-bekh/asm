@@ -1,0 +1,9 @@
+FROM debian:bookworm-slim
+
+ARG PKGS="nasm make valgrind binutils-x86-64-linux-gnu"
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends $PKGS \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /sandbox

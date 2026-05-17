@@ -1,0 +1,17 @@
+version: "3"
+
+tasks:
+  build:
+    cmds:
+      - docker build --platform=linux/amd64 -t nasm-x86_64 .
+  up:
+    cmds:
+      - |
+        docker run --name nasm-x86_64 -it --rm \
+        -v "$(pwd):/app" --cap-add=SYS_PTRACE \
+        --security-opt seccomp=unconfined \
+        nasm-x86_64 bash
+  re:
+    cmds:
+      - task build
+      - task up

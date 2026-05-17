@@ -1,0 +1,69 @@
+version: "3"
+
+vars:
+  IMAGE: asm-sandbox
+  VALGRIND_IMAGE: asm-sandbox-valgrind
+  CONTAINER: asm-sandbox
+  FILE: '{{default "main" .FILE}}'
+  PORT: '{{default "1234" .PORT}}'
+
+tasks:
+  build:
+    desc: Build the ARM64 sandbox image
+    cmds:
+      - docker build --platform=linux/arm64 -t {{.IMAGE}} -f "{{.TASKFILE_DIR}}/Dockerfile" "{{.TASKFILE_DIR}}"
+
+  build-valgrind:
+    desc: Build the AMD64 Valgrind sandbox image
+    cmds:
+      - docker build --platform=linux/amd64 -t {{.VALGRIND_IMAGE}} -f "{{.TASKFILE_DIR}}/Dockerfile.valgrind" "{{.TASKFILE_DIR}}"
+
+  up:
+    desc: Open a shell in the sandbox container
+    cmds:
+      - |
+        docker run --name {{.CONTAINER}} -it --rm \
+        -v "{{.TASKFILE_DIR}}:/sandbox" \
+        -p {{.PORT}}:{{.PORT}} \
+        {{.IMAGE}} bash
+
+  shell:
+    desc: Open a second shell in the running sandbox container
+    cmds:
+      - docker exec -it {{.CONTAINER}} bash
+
+  re:
+    desc: Rebuild the image and open a shell
+    cmds:
+      - task -t "{{.TASKFILE_DIR}}/Taskfile.yaml" build
+      - task -t "{{.TASKFILE_DIR}}/Taskfile.yaml" up
+
+  asm:
+    desc: Build the selected x86_64 assembly file inside the running container
+    cmds:
+      - docker exec -it {{.CONTAINER}} make FILE={{.FILE}}
+
+  run:
+    desc: Run the selected x86_64 binary through qemu-x86_64
+    cmds:
+      - docker exec -it {{.CONTAINER}} make FILE={{.FILE}} RUNNER=qemu-x86_64
+
+  server:
+    desc: Start qemu-x86_64 gdbstub for the selected binary
+    cmds:
+      - docker exec -it {{.CONTAINER}} make FILE={{.FILE}} debug-server
+
+  gdb:
+    desc: Connect Pwndbg to the qemu gdbstub
+    cmds:
+      - docker exec -it {{.CONTAINER}} make FILE={{.FILE}} gdb
+
+  valgrind:
+    desc: Run the selected file under Valgrind in an AMD64 container
+    cmds:
+      - docker run --rm --platform=linux/amd64 -v "{{.TASKFILE_DIR}}:/sandbox" {{.VALGRIND_IMAGE}} make FILE={{.FILE}} valgrind
+
+  valgrind-shell:
+    desc: Open a shell in the AMD64 Valgrind sandbox image
+    cmds:
+      - docker run --rm --platform=linux/amd64 -it -v "{{.TASKFILE_DIR}}:/sandbox" {{.VALGRIND_IMAGE}} bash
