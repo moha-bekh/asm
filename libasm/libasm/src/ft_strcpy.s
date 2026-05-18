@@ -11,6 +11,8 @@ ft_strcpy:
 		mov [rdi], dl
     inc rsi
     inc rdi
-		test dl, dl
-		jnz .loop
-    ret
+			test dl, dl
+			jnz .loop
+	    ret
+
+section .note.GNU-stack noalloc noexec nowrite progbits

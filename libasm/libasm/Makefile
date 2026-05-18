@@ -10,6 +10,8 @@ OBJ = $(SRC:.s=.o)
 
 NAME = libasm.a
 
+.PHONY: all test run clean fclean re
+
 all: $(NAME)
 
 %.o: %.s
@@ -30,8 +32,7 @@ clean:
 	rm -f $(OBJ)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) libasm
 
 re: fclean all
-
 
